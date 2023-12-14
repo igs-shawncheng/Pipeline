@@ -1,0 +1,110 @@
+pipeline {
+    agent any
+    
+    environment {
+        //GitCredential名稱
+        gitCredentialsId = 'GaiaGitHub'
+        //git目錄
+        gaiaRepository = 'https://github.com/CannonUFO/Gaia.git'
+        frameworkRepository = 'https://github.com/CannonUFO/oopsframework.git'
+        //git下載下來後專案所在目錄
+        projectPath = "~/.jenkins/workspace/Gaia-DEV"
+        //CocoCreator 路徑
+        executor = "/Applications/Cocos/Creator/3.8.1/CocosCreator.app/Contents/MacOS/CocosCreator"
+        //編譯設定
+        buildConfigPath = "./make/buildConfig_${platform}.json"
+    }
+
+    stages {
+        stage('Info') {
+            steps {
+                echo "ProjectPath:" + projectPath
+                echo "Platform:" + platform
+                echo "buildConfigPath:" + buildConfigPath
+            }
+        }
+        stage('Clone') {
+            steps{
+                echo 'Clone Begin'
+                script {
+                    checkout([$class: 'GitSCM', 
+                              branches: [[name: 'main']], 
+                              userRemoteConfigs: [[url: gaiaRepository, credentialsId:gitCredentialsId]], 
+                              extensions: [
+                                  [$class: 'CloneOption', shallow: true]],
+                              poll: true])
+                              
+                    checkout([$class: 'GitSCM', 
+                              branches: [[name: 'main']], 
+                              userRemoteConfigs: [[url: frameworkRepository, credentialsId:gitCredentialsId]], 
+                              extensions: [
+                                  [$class: 'CloneOption', shallow: true],
+                                  [$class: 'RelativeTargetDirectory',relativeTargetDir: 'extensions/oops-framework']],
+                              poll: true])
+                }
+            }
+        }
+        stage('Build Web-desktop') {
+            when {
+                expression { return platform == 'web-desktop' }
+            }
+            steps {
+                echo 'Build Web-desktop Begin'
+                script {
+                    def command = "$executor --project $projectPath --build 'platform=$platform;configPath=$buildConfigPath;debug=true'"
+                    runBuild(command)
+                }
+            }
+        }
+        stage('Build Android') {
+            when {
+                expression { return platform == 'android' }
+            }
+            steps {
+                echo 'Build Android Begin'
+                script {
+                    def command = "$executor --project $projectPath --build 'platform=$platform;configPath=$buildConfigPath;debug=true'"
+                    runBuild(command)
+                    
+                    
+                    def gradlew = projectPath + "/build/android/proj/gradlew"
+                    def androidProjectPath = projectPath + "/build/android/proj/"
+                    def buildAndroidCmd = "$gradlew -p $androidProjectPath assembleDebug"
+                    runBuild(buildAndroidCmd)
+                }
+            }
+        }
+
+        stage('Build iOS') {
+            when {
+                expression { return platform == 'ios' }
+            }
+            steps {
+                echo 'Build iOS Begin'
+                script {
+                    def command = "$executor --project $projectPath --build 'platform=$platform;configPath=$buildConfigPath;debug=true'"
+                    runBuild(command)
+                }
+            }
+        }
+
+        // Add more stages for other platforms as needed...
+    }
+}
+
+def runBuild(command) {
+    echo "creator command: ${command}"
+
+    try {
+        def exitCode = sh(script: command, returnStatus: true)
+
+        if (exitCode == 36) {
+            echo 'Build Success'
+        } else {
+            echo "Build Fail - Exit Code: ${exitCode}"
+        }
+    } catch (Exception e) {
+        echo "Exception occurred: ${e.message}"
+        currentBuild.result = 'FAILURE'
+    }
+}
