@@ -39,7 +39,7 @@ pipeline {
                               userRemoteConfigs: [[url: frameworkRepository, credentialsId:gitCredentialsId]], 
                               extensions: [
                                   [$class: 'CloneOption', shallow: true],
-                                  [$class: 'RelativeTargetDirectory',relativeTargetDir: 'extensions/oops-framework']],
+                                  [$class: 'RelativeTargetDirectory',relativeTargetDir: 'extensions/oopsframework']],
                               poll: true])
                 }
             }
