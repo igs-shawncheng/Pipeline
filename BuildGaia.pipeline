@@ -5,19 +5,14 @@ pipeline {
         //GitCredential名稱
         gitCredentialsId = 'GaiaGitHub'
         //git目錄
-        gaiaRepository = 'https://github.com/CannonUFO/Gaia.git'
-        frameworkRepository = 'https://github.com/CannonUFO/oopsframework.git'
+        gaiaRepository = 'https://github.com/OLD-RD2/Gaia.git'
+        frameworkRepository = 'https://github.com/OLD-RD2/Gold-Framework.git'
         //git下載下來後專案所在目錄
         projectPath = "~/.jenkins/workspace/Gaia-DEV"
         //CocoCreator 路徑
         executor = "/Applications/Cocos/Creator/3.8.1/CocosCreator.app/Contents/MacOS/CocosCreator"
         //編譯設定
         buildConfigPath = "./make/buildConfig_${platform}.json"
-    }
-
-    parameters{
-        string(defaultValue: "maintainer"),
-        description: 'Enter user role', name: 'user')
     }
 
     stages {
@@ -44,7 +39,7 @@ pipeline {
                               userRemoteConfigs: [[url: frameworkRepository, credentialsId:gitCredentialsId]], 
                               extensions: [
                                   [$class: 'CloneOption', shallow: true],
-                                  [$class: 'RelativeTargetDirectory',relativeTargetDir: 'extensions/oopsframework']],
+                                  [$class: 'RelativeTargetDirectory',relativeTargetDir: 'extensions/Gold-Framework']],
                               poll: true])
                 }
             }
