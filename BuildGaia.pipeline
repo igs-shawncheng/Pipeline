@@ -15,6 +15,11 @@ pipeline {
         buildConfigPath = "./make/buildConfig_${platform}.json"
     }
 
+    parameters{
+        string(defaultValue: "maintainer"),
+        description: 'Enter user role', name: 'user')
+    }
+
     stages {
         stage('Info') {
             steps {
