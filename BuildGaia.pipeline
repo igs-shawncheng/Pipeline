@@ -1,6 +1,9 @@
 pipeline {
     agent any
-    
+
+
+
+
     environment {
         //GitCredential名稱
         gitCredentialsId = 'GaiaGitHub'
