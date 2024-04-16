@@ -25,7 +25,7 @@ pipeline {
         }
         stage('Clone') {
             steps{
-                echo 'Clone Begin'
+                echo 'Clone Begin: ' + gaiaRepository
                 script {
                     checkout([$class: 'GitSCM', 
                               branches: [[name: 'main']], 
@@ -33,7 +33,10 @@ pipeline {
                               extensions: [
                                   [$class: 'CloneOption', shallow: true]],
                               poll: true])
-                              
+                }
+
+                echo 'Clone Begin: ' + frameworkRepository
+                script {
                     checkout([$class: 'GitSCM', 
                               branches: [[name: 'main']], 
                               userRemoteConfigs: [[url: frameworkRepository, credentialsId:gitCredentialsId]], 
