@@ -10,7 +10,7 @@ pipeline {
         //git下載下來後專案所在目錄
         projectPath = "~/.jenkins/workspace/Gaia-DEV"
         //CocoCreator 路徑
-        executor = "/Applications/Cocos/Creator/3.8.1/CocosCreator.app/Contents/MacOS/CocosCreator"
+        executor = "/Applications/Cocos/Creator/3.8.2/CocosCreator.app/Contents/MacOS/CocosCreator"
         //編譯設定
         buildConfigPath = "./make/buildConfig_${platform}.json"
     }
@@ -51,7 +51,7 @@ pipeline {
             steps {
                 echo 'Build Web-desktop Begin'
                 script {
-                    def command = "$executor --project $projectPath --build 'platform=$platform;configPath=$buildConfigPath;debug=true'"
+                    def command = "$executor --project $projectPath --build 'platform=$platform;configPath=$buildConfigPath;debug=$isDebug'"
                     runBuild(command)
                 }
             }
@@ -63,7 +63,7 @@ pipeline {
             steps {
                 echo 'Build Android Begin'
                 script {
-                    def command = "$executor --project $projectPath --build 'platform=$platform;configPath=$buildConfigPath;debug=true'"
+                    def command = "$executor --project $projectPath --build 'platform=$platform;configPath=$buildConfigPath;debug=$isDebug'"
                     runBuild(command)
                     
                     
@@ -82,7 +82,7 @@ pipeline {
             steps {
                 echo 'Build iOS Begin'
                 script {
-                    def command = "$executor --project $projectPath --build 'platform=$platform;configPath=$buildConfigPath;debug=true'"
+                    def command = "$executor --project $projectPath --build 'platform=$platform;configPath=$buildConfigPath;debug=$isDebug'"
                     runBuild(command)
                 }
             }
